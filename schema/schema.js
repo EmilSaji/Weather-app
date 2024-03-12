@@ -44,7 +44,7 @@ const LocationType = new GraphQLObjectType({
   }),
 });
 
-const RootQuery = new GraphQLObjectType({
+const RootQuery = new graphql.GraphQLObjectType({
   name: "RootQueryType",
   fields: {
     user: {
@@ -61,6 +61,26 @@ const RootQuery = new GraphQLObjectType({
         return Location.findById(args.id);
       },
     },
+    loginUser: {
+      type: UserType,
+      args: {
+        username: { type: GraphQLString },
+        password: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        const user = await User.findOne({ username: args.username });
+        if (!user) {
+          throw new Error("No such user found");
+        }
+
+        const valid = args.password === user.password;
+        if (!valid) {
+          throw new Error("Invalid password");
+        }
+
+        return user;
+      },
+    },
   },
 });
 
@@ -75,7 +95,12 @@ const Mutation = new graphql.GraphQLObjectType({
         email: { type: new graphql.GraphQLNonNull(GraphQLString) },
         created_at: { type: new graphql.GraphQLNonNull(GraphQLString) },
       },
-      resolve(parent, args) {
+      async resolve(parent, args) {
+        const existingUser = await User.findOne({ email: args.email });
+        if (existingUser) {
+          throw new Error("User already exists");
+        }
+
         let user = new User({
           username: args.username,
           password: args.password,
@@ -90,5 +115,5 @@ const Mutation = new graphql.GraphQLObjectType({
 
 module.exports = new graphql.GraphQLSchema({
   query: RootQuery,
-  mutation: Mutation
+  mutation: Mutation,
 });

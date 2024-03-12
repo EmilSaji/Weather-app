@@ -6,16 +6,13 @@ const cors = require("cors");
 
 const app = express();
 
-// Allow cross-origin requests
 app.use(cors());
 
-// Connect to MongoDB
 mongoose.connect("mongodb://localhost:27017/WeatherDB");
 mongoose.connection.once("open", () => {
   console.log("Connected to database:", mongoose.connection.name);
 });
 
-// Bind express with graphql
 app.use(
   "/graphql",
   graphqlHTTP({
