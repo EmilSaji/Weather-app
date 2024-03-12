@@ -64,11 +64,11 @@ const RootQuery = new graphql.GraphQLObjectType({
     loginUser: {
       type: UserType,
       args: {
-        username: { type: GraphQLString },
+        email: { type: GraphQLString },
         password: { type: GraphQLString },
       },
       async resolve(parent, args) {
-        const user = await User.findOne({ username: args.username });
+        const user = await User.findOne({ email: args.email });
         if (!user) {
           throw new Error("No such user found");
         }
