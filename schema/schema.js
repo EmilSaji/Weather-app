@@ -110,6 +110,24 @@ const Mutation = new graphql.GraphQLObjectType({
         return user.save();
       },
     },
+    addLocation: {
+      type: LocationType,
+      args: {
+        user_id: { type: new graphql.GraphQLNonNull(GraphQLID) },
+        name: { type: new graphql.GraphQLNonNull(GraphQLString) },
+        latitude: { type: new graphql.GraphQLNonNull(GraphQLString) },
+        longitude: { type: new graphql.GraphQLNonNull(GraphQLString) },
+      },
+      async resolve(parent, args) {
+        let location = new Location({
+          user_id: args.user_id,
+          name: args.name,
+          latitude: args.latitude,
+          longitude: args.longitude,
+        });
+        return location.save();
+      },
+    },
   },
 });
 
