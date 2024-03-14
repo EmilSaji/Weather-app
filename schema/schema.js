@@ -135,6 +135,20 @@ const Mutation = new graphql.GraphQLObjectType({
         return location.save();
       },
     },
+    deleteLocation: {
+      type: LocationType,
+      args: {
+        id: { type: new graphql.GraphQLNonNull(GraphQLID) },
+      },
+      async resolve(parent, args) {
+        let deletedLocation = await Location.findOne({ _id: args.id });
+        if (!deletedLocation) {
+          throw new Error("Error finding location");
+        }
+        await Location.deleteOne({ _id: args.id });
+        return deletedLocation;
+      },
+    },
   },
 });
 
